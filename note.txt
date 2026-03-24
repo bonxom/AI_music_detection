@@ -1,0 +1,23 @@
+mô hình VIT (encoder-only)
+ViT chia spectrogram 2D đồng thời theo cả trục thời gian và trục tần số, 
+nên mỗi patch là một ô vuông nhỏ của mặt phẳng time-frequency. 
+Số token của ViT vì thế là:
+
+N_ViT=(F/p)×(T/p)
+
+với F là số bins theo tần số, T là số frame theo thời gian, p là patch size.
+
+Ý nghĩa trực giác (encoder-only)
+Mỗi token chỉ nhìn thấy một mảnh nhỏ cục bộ của spectrogram.
+Sau đó self-attention sẽ cho các token “nói chuyện” với nhau để học quan hệ xa.
+Vấn đề là khi bài hát dài lên, T tăng rất mạnh, nên số token tăng theo phép nhân, 
+làm attention trở nên rất đắt. 
+Paper nêu ví dụ: với F=128, patch size p=16, audio 5 giây cho 64 token, nhưng audio 120 giây tăng lên 1872 token, 
+gần 30 lần nhiều hơn. Vì global attention có chi phí tăng theo số token, ViT trở nên kém thực tế cho bài hát dài.
+
+SpecTTTra viết tắt của Spectro-Temporal Tokens Transformer
+Khác với ViT, nó tách thành 2 hướng thông tin: thời gian, tần số bằng 2 tokenizer riêng
+Sau đó cộng 2 postion embedding riêng, đưa vào 1 encoder ViT, rồi avarage pool để classify
+Số token:
+N_Spec = (F/f) + (T/t)
+với f là spectral clip size, t là temporal clip size.

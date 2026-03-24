@@ -1,0 +1,7 @@
+archive
+.vscode
+crop_data
+__pycache__/
+.venv/
+venv/
+env/
