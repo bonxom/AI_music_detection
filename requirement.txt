@@ -1,7 +1,10 @@
-pandas
 numpy
+pandas
 matplotlib
 librosa
 soundfile
+torch
+torchaudio
+scikit-learn
 kagglehub
 yt-dlp

@@ -1,5 +1,5 @@
 import torch
-from torch.nn import nn
+from torch import nn
 
 class SinusoidPosEncoding(nn.Module):
     def __init__(self, token_dim, max_len=5000):

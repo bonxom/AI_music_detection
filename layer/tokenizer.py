@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 import math
-from pos_encoding import SinusoidPosEncoding
+from layer.pos_encoding import SinusoidPosEncoding
 
 class STTokenizer(nn.Module):
     def __init__(
@@ -10,7 +10,7 @@ class STTokenizer(nn.Module):
             t_clip, f_clip,
             embed_dim,
         ):
-        super(self, STTokenizer).__init__()
+        super().__init__()
         self.input_spec_dim = input_spec_dim
         self.input_temp_dim = input_temp_dim
         self.t_clip = t_clip
@@ -28,18 +28,18 @@ class STTokenizer(nn.Module):
         self.num_tokens = self.num_spec_token + self.num_temp_token
 
         self.temporal_tokenizer = Tokenizer1D(
-            input_dim=input_temp_dim,
+            input_dim=input_spec_dim,
             embed_dim=embed_dim,
             clip_size=t_clip
         )
 
         self.spectro_tokenizer = Tokenizer1D(
-            input_dim=input_spec_dim,
+            input_dim=input_temp_dim,
             embed_dim=embed_dim,
             clip_size=f_clip
         )
 
-    def foward(self, x):
+    def forward(self, x):
         temp_input = x # (B, F, T)
         temp_tokens = self.temporal_tokenizer(temp_input) # (B, T/t_clip, embed_dim)
 
@@ -62,7 +62,7 @@ class Tokenizer1D(nn.Module):
         embed_dim,
         clip_size, # thời gian hoặc tần số
     ):
-        super(self, Tokenizer1D).__init__()
+        super().__init__()
         self.conv1d = nn.Conv1d(
             in_channels=input_dim,
             out_channels=embed_dim,
