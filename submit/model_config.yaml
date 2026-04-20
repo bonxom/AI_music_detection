@@ -1,0 +1,11 @@
+name: "spectttra-audio-5s"
+version: "1.0.0"
+modality: "audio"
+
+preprocessing:
+  sample_rate: 16000
+  duration_seconds: 5.0
+
+model:
+  num_classes: 2
+  weights_file: "model.safetensors"

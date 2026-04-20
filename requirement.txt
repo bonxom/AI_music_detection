@@ -1,10 +1,15 @@
-numpy
-pandas
-matplotlib
-librosa
-soundfile
-torch
-torchaudio
-scikit-learn
-kagglehub
-yt-dlp
+--extra-index-url https://download.pytorch.org/whl/cu124
+
+numpy==1.26.4
+pandas==2.2.2
+matplotlib==3.9.0
+librosa==0.10.2.post1
+soundfile==0.12.1
+torch==2.5.1+cu124
+torchaudio==2.5.1+cu124
+scikit-learn==1.5.1
+kagglehub==0.3.6
+yt-dlp==2025.1.26
+safetensors==0.4.5
+datasets>=2.19.0
+PyYAML>=6.0.1
