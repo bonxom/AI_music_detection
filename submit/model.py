@@ -3,6 +3,7 @@ from torch import nn
 import torchaudio
 from safetensors.torch import load_file
 import math
+from config.loader import get_model_kwargs
 
 class STTokenizer(nn.Module):
     def __init__(
@@ -227,16 +228,9 @@ class SpecTTTra(nn.Module):
 
 def load_model(weights_path: str, num_classes: int = 2) -> nn.Module:
     """Load SpecTTTra with safetensors weights for GASBench-style inference."""
-    model = SpecTTTra(
-        input_spec_dim=128,
-        input_temp_dim=157,
-        embed_dim=256,
-        f_clip=8,
-        t_clip=4,
-        num_heads=8,
-        num_layers=4,
-        num_classes=num_classes,
-    )
+    model_kwargs = get_model_kwargs("submit_inference")
+    model_kwargs["num_classes"] = num_classes
+    model = SpecTTTra(**model_kwargs)
     state_dict = load_file(weights_path)
     model.load_state_dict(state_dict)
     model.eval()

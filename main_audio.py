@@ -8,43 +8,13 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, WeightedRandomSampler
 from model_audio_input.dataset import SonicDataset
+from config.loader import get_training_variants
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 num_epoch = 1
 
-hyper_param_6s = [
-    { # alpha
-        "input_spec_dim": 128,
-        "input_temp_dim": 188,
-        "embed_dim": 384,
-        "f_clip": 1,
-        "t_clip": 3,
-        "num_heads": 6,
-        "num_layers": 12,
-        "pos_drop_rate": 0
-    },
-    { # beta
-        "input_spec_dim": 128,
-        "input_temp_dim": 188,
-        "embed_dim": 384,
-        "f_clip": 3,
-        "t_clip": 5,
-        "num_heads": 6,
-        "num_layers": 12,
-        "pos_drop_rate": 0
-    },
-    { # gamma
-        "input_spec_dim": 128,
-        "input_temp_dim": 188,
-        "embed_dim": 384,
-        "f_clip": 5,
-        "t_clip": 7,
-        "num_heads": 6,
-        "num_layers": 12,
-        "pos_drop_rate": 0
-    }
-]
+hyper_param_6s = [v["model_kwargs"] for v in get_training_variants("clip_6s_variants")]
 
 train_loss_hist, train_acc_hist, test_acc_hist = [], [], []
 

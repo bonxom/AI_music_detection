@@ -1,0 +1,94 @@
+model_profiles:
+  backend_inference:
+    model_kwargs:
+      input_spec_dim: 128
+      input_temp_dim: 188
+      embed_dim: 384
+      f_clip: 1
+      t_clip: 3
+      num_heads: 6
+      num_layers: 12
+      expected_samples: 96000
+      sample_rate: 16000
+      n_fft: 2048
+      hop_length: 512
+      f_min: 20.0
+      f_max: 8000.0
+      pos_drop_rate: 0.0
+    preprocess:
+      sample_rate: 16000
+      expected_samples: 96000
+
+  model_audio_input_inference:
+    model_kwargs:
+      input_spec_dim: 128
+      input_temp_dim: 188
+      embed_dim: 384
+      f_clip: 1
+      t_clip: 3
+      num_heads: 6
+      num_layers: 12
+      expected_samples: 96000
+      sample_rate: 16000
+      n_fft: 2048
+      hop_length: 512
+      f_min: 20.0
+      f_max: 8000.0
+      pos_drop_rate: 0.0
+    preprocess:
+      sample_rate: 16000
+      expected_samples: 96000
+
+  submit_inference:
+    model_kwargs:
+      input_spec_dim: 128
+      input_temp_dim: 157
+      embed_dim: 256
+      f_clip: 8
+      t_clip: 4
+      num_heads: 8
+      num_layers: 4
+      expected_samples: 80000
+      sample_rate: 16000
+      n_fft: 2048
+      hop_length: 512
+      f_min: 20.0
+      f_max: 8000.0
+      pos_drop_rate: 0.0
+    preprocess:
+      sample_rate: 16000
+      expected_samples: 80000
+
+training:
+  clip_6s_default_variant: alpha
+  clip_6s_variants:
+    - name: alpha
+      model_kwargs:
+        input_spec_dim: 128
+        input_temp_dim: 188
+        embed_dim: 384
+        f_clip: 1
+        t_clip: 3
+        num_heads: 6
+        num_layers: 12
+        pos_drop_rate: 0.0
+    - name: beta
+      model_kwargs:
+        input_spec_dim: 128
+        input_temp_dim: 188
+        embed_dim: 384
+        f_clip: 3
+        t_clip: 5
+        num_heads: 6
+        num_layers: 12
+        pos_drop_rate: 0.0
+    - name: gamma
+      model_kwargs:
+        input_spec_dim: 128
+        input_temp_dim: 188
+        embed_dim: 384
+        f_clip: 5
+        t_clip: 7
+        num_heads: 6
+        num_layers: 12
+        pos_drop_rate: 0.0
