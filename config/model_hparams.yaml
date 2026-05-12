@@ -66,29 +66,32 @@ training:
       model_kwargs:
         input_spec_dim: 128
         input_temp_dim: 188
-        embed_dim: 384
+        embed_dim: 768
         f_clip: 1
         t_clip: 3
         num_heads: 6
         num_layers: 12
-        pos_drop_rate: 0.0
+        dim_feedforward: 3072
+        pos_drop_rate: 0.2
     - name: beta
       model_kwargs:
         input_spec_dim: 128
         input_temp_dim: 188
-        embed_dim: 384
+        embed_dim: 768
         f_clip: 3
         t_clip: 5
         num_heads: 6
         num_layers: 12
+        dim_feedforward: 3072
         pos_drop_rate: 0.0
     - name: gamma
       model_kwargs:
         input_spec_dim: 128
         input_temp_dim: 188
-        embed_dim: 384
+        embed_dim: 768
         f_clip: 5
         t_clip: 7
         num_heads: 6
         num_layers: 12
+        dim_feedforward: 3072
         pos_drop_rate: 0.0

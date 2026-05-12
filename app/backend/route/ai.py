@@ -14,7 +14,7 @@ from config.loader import get_training_default_variant
 
 router = APIRouter(prefix="/ai", tags=["AI Music Detection"])
 
-DEFAULT_WEIGHTS_PATH = Path(__file__).resolve().parents[2] / "model.safetensors"
+DEFAULT_WEIGHTS_PATH = Path(__file__).resolve().parents[2] / "model_alpha.safetensors"
 MODEL_WEIGHTS_PATH = Path(
     os.getenv("AI_MODEL_WEIGHTS_PATH", str(DEFAULT_WEIGHTS_PATH))
 ).expanduser()
@@ -74,8 +74,8 @@ async def detect_ai_music(file: UploadFile = File(...)):
 
         probs = infer["probs"]
         pred_idx = int(infer["pred_idx"])
-        human_score = float(probs[0]) if len(probs) > 0 else 0.0
-        ai_score = float(probs[1]) if len(probs) > 1 else 0.0
+        ai_score = float(probs[0]) if len(probs) > 0 else 0.0
+        human_score = float(probs[1]) if len(probs) > 1 else 0.0
 
         return {
             "filename": file.filename,
