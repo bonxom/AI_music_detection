@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #16110a;
+  background:
+    radial-gradient(circle at top left, rgba(255, 216, 185, 0.9), transparent 28%),
+    radial-gradient(circle at 85% 15%, rgba(221, 107, 32, 0.18), transparent 24%),
+    linear-gradient(160deg, #fffaf2 0%, #fff1e2 48%, #fde3c6 100%);
+  font-family: "Space Grotesk", "Avenir Next", "Trebuchet MS", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}

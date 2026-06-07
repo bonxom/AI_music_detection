@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/api/client.ts","./src/components/DetectionModeSelect.tsx","./src/components/MediaPreview.tsx","./src/components/ModelSelect.tsx","./src/components/ResultPanel.tsx","./src/components/StatusMessage.tsx","./src/components/VideoUploadField.tsx"],"version":"5.9.3"}
