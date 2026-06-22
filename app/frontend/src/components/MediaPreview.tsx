@@ -49,9 +49,11 @@ export function MediaPreview({ file }: MediaPreviewProps) {
   }
 
   return (
-    <section className="rounded-[32px] border border-white/70 bg-white/80 p-6 shadow-panel backdrop-blur">
-      <p className="text-sm uppercase tracking-[0.2em] text-stone-500">Preview</p>
-      <p className="mt-3 text-sm font-medium text-ink">{file.name}</p>
+    <section className="rounded-card border border-border bg-white p-5 shadow-card">
+      <div className="flex items-center justify-between">
+        <p className="section-label">Preview</p>
+        <p className="truncate text-xs text-muted max-w-[200px]">{file.name}</p>
+      </div>
 
       {previewType === "audio" ? (
         <audio className="mt-4 w-full" controls preload="metadata" src={previewUrl}>
@@ -59,7 +61,7 @@ export function MediaPreview({ file }: MediaPreviewProps) {
         </audio>
       ) : (
         <video
-          className="mt-4 max-h-80 w-full rounded-[24px] bg-stone-950"
+          className="mt-4 w-full max-h-72 rounded-control bg-stone-950 object-contain"
           controls
           preload="metadata"
           src={previewUrl}

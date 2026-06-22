@@ -3,14 +3,13 @@
 @tailwind utilities;
 
 :root {
-  color: #16110a;
-  background:
-    radial-gradient(circle at top left, rgba(255, 216, 185, 0.9), transparent 28%),
-    radial-gradient(circle at 85% 15%, rgba(221, 107, 32, 0.18), transparent 24%),
-    linear-gradient(160deg, #fffaf2 0%, #fff1e2 48%, #fde3c6 100%);
-  font-family: "Space Grotesk", "Avenir Next", "Trebuchet MS", sans-serif;
+  color: #1a1510;
+  background: linear-gradient(168deg, #faf8f5 0%, #f5f0ea 50%, #f0ebe4 100%);
+  font-family: "Inter", system-ui, "Avenir", "Helvetica", "Arial", sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -31,4 +30,39 @@ select {
 
 #root {
   min-height: 100vh;
+}
+
+/* Focus ring utility */
+*:focus-visible {
+  outline: 2px solid #e07826;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Pulse animation for loading states */
+@keyframes subtle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-subtle-pulse {
+  animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+/* Spinner animation */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Section label utility */
+.section-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #78716c;
 }

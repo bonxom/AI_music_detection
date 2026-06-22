@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Iterator
 
 import librosa
+import numpy as np
 import torch
 import torchaudio
 
@@ -124,6 +125,89 @@ def load_audio_waveform(path: str | Path, sample_rate: int = _SAMPLE_RATE) -> to
     return waveform.to(torch.float32)
 
 
+def _zscore(values: list[float]) -> np.ndarray:
+    """Standardize candidate-window scores without producing NaN for constants."""
+    array = np.asarray(values, dtype=np.float32)
+    std = float(array.std())
+    if std < 1e-8:
+        return np.zeros_like(array)
+    return (array - array.mean()) / std
+
+
+def select_richest_segment(
+    waveform: torch.Tensor,
+    *,
+    sample_rate: int = _SAMPLE_RATE,
+    window_seconds: float = 6.0,
+    hop_seconds: float = 1.0,
+) -> tuple[torch.Tensor, int]:
+    """Return the most information-rich fixed-length audio window.
+
+    Candidate windows are ranked with normalized RMS energy, onset strength,
+    spectral entropy and spectral bandwidth, while silent frames are penalized.
+    The silence threshold is derived from the whole track so that the silence
+    score can meaningfully distinguish one window from another.
+    """
+    if waveform.ndim != 1:
+        raise ValueError(f"Expected mono waveform with shape [T], got {tuple(waveform.shape)}")
+    if waveform.numel() == 0:
+        raise ValueError("Audio waveform is empty after preprocessing")
+    if window_seconds <= 0 or hop_seconds <= 0:
+        raise ValueError("window_seconds and hop_seconds must be positive")
+
+    window_samples = int(window_seconds * sample_rate)
+    hop_samples = int(hop_seconds * sample_rate)
+    if window_samples <= 0 or hop_samples <= 0:
+        raise ValueError("window_seconds and hop_seconds result in zero samples")
+
+    waveform = waveform.to(torch.float32).cpu()
+    if waveform.numel() <= window_samples:
+        return torch.nn.functional.pad(waveform, (0, window_samples - waveform.numel())), 0
+
+    samples = waveform.numpy()
+    global_rms = librosa.feature.rms(y=samples, frame_length=2048, hop_length=512)[0]
+    silence_threshold = max(1e-8, 0.1 * float(np.median(global_rms)))
+
+    last_start = len(samples) - window_samples
+    starts = list(range(0, last_start + 1, hop_samples))
+    if starts[-1] != last_start:
+        starts.append(last_start)
+
+    rms_scores: list[float] = []
+    flux_scores: list[float] = []
+    entropy_scores: list[float] = []
+    bandwidth_scores: list[float] = []
+    silence_scores: list[float] = []
+
+    for start in starts:
+        segment = samples[start : start + window_samples]
+        spectrum = np.abs(librosa.stft(segment, n_fft=2048, hop_length=512)) + 1e-8
+        rms = librosa.feature.rms(S=spectrum)[0]
+        flux = librosa.onset.onset_strength(y=segment, sr=sample_rate, hop_length=512)
+        bandwidth = librosa.feature.spectral_bandwidth(S=spectrum, sr=sample_rate)[0]
+        probability = spectrum / spectrum.sum(axis=0, keepdims=True)
+        entropy = -(probability * np.log(probability)).sum(axis=0)
+
+        rms_scores.append(float(rms.mean()))
+        flux_scores.append(float(flux.mean()))
+        entropy_scores.append(float(entropy.mean()))
+        bandwidth_scores.append(float(bandwidth.mean()))
+        silence_scores.append(float(np.mean(rms < silence_threshold)))
+
+    score = (
+        0.30 * _zscore(rms_scores)
+        + 0.25 * _zscore(flux_scores)
+        + 0.20 * _zscore(entropy_scores)
+        + 0.15 * _zscore(bandwidth_scores)
+        - 0.50 * _zscore(silence_scores)
+    )
+    best_start = starts[int(np.argmax(score))]
+    best_segment = torch.from_numpy(
+        np.ascontiguousarray(samples[best_start : best_start + window_samples])
+    ).to(torch.float32)
+    return best_segment, best_start
+
+
 def preprocess_audio(audio_path: str | Path) -> torch.Tensor:
     waveform = load_audio_waveform(audio_path, sample_rate=_SAMPLE_RATE)
     if waveform.numel() < _EXPECTED_SAMPLES:
@@ -132,6 +216,17 @@ def preprocess_audio(audio_path: str | Path) -> torch.Tensor:
     elif waveform.numel() > _EXPECTED_SAMPLES:
         waveform = waveform[:_EXPECTED_SAMPLES]
     return waveform.unsqueeze(0)
+
+
+def preprocess_richest_audio(audio_path: str | Path) -> tuple[torch.Tensor, int]:
+    """Load an input file and return its highest-information 6-second crop."""
+    waveform = load_audio_waveform(audio_path, sample_rate=_SAMPLE_RATE)
+    segment, start_sample = select_richest_segment(
+        waveform,
+        sample_rate=_SAMPLE_RATE,
+        window_seconds=_EXPECTED_SAMPLES / _SAMPLE_RATE,
+    )
+    return segment.unsqueeze(0), start_sample
 
 
 def preprocess(path: str | Path) -> torch.Tensor:

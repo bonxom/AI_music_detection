@@ -13,13 +13,13 @@ const OPTIONS: Array<{
 }> = [
   {
     value: "full_crop",
-    title: "Detect full crop",
-    description: "Scan the full audio in contiguous 6-second chunks and report the most suspicious segment.",
+    title: "Full crop detection",
+    description: "Scan the full audio in 6-second chunks and report the most suspicious segment.",
   },
   {
     value: "random_6s_crop",
-    title: "Detect random 6s crop",
-    description: "Use the legacy single 6-second inference path from the current backend flow.",
+    title: "Random 6s crop",
+    description: "Single random 6-second sample using the legacy inference path.",
   },
 ];
 
@@ -29,36 +29,41 @@ export function DetectionModeSelect({
   onChange,
 }: DetectionModeSelectProps) {
   return (
-    <div className="space-y-3">
-      <label className="text-sm font-semibold uppercase tracking-[0.18em] text-stone-600">
-        Detection Mode
-      </label>
+    <div className="space-y-2">
+      <span className="section-label">Detection Mode</span>
 
-      <div className="grid gap-3">
+      <div className="grid gap-2" role="radiogroup" aria-label="Detection mode">
         {OPTIONS.map((option) => {
           const selected = option.value === value;
           return (
             <button
               key={option.value}
-              className={`rounded-[24px] border px-4 py-4 text-left transition ${
+              role="radio"
+              aria-checked={selected}
+              className={`rounded-control border px-4 py-3 text-left transition ${
                 selected
-                  ? "border-accent bg-orange-50 shadow-sm"
-                  : "border-orange-200 bg-white/85 hover:border-orange-300"
-              }`}
+                  ? "border-accent bg-accent-soft shadow-sm"
+                  : "border-border bg-white hover:border-stone-300 hover:shadow-sm"
+              } disabled:cursor-not-allowed disabled:opacity-50`}
               disabled={disabled}
               onClick={() => onChange(option.value)}
               type="button"
             >
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm font-semibold text-ink">{option.title}</p>
-                  <p className="mt-1 text-sm text-stone-600">{option.description}</p>
-                </div>
+              <div className="flex items-center gap-3">
                 <span
-                  className={`h-4 w-4 rounded-full border ${
-                    selected ? "border-accent bg-accent" : "border-stone-300 bg-white"
+                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition ${
+                    selected ? "border-accent" : "border-stone-300"
                   }`}
-                />
+                  aria-hidden="true"
+                >
+                  {selected ? (
+                    <span className="h-2 w-2 rounded-full bg-accent" />
+                  ) : null}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-ink">{option.title}</p>
+                  <p className="mt-0.5 text-xs text-muted leading-relaxed">{option.description}</p>
+                </div>
               </div>
             </button>
           );

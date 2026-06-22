@@ -5,9 +5,15 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from app.backend.service.data_process import build_contiguous_chunks, preprocess
+from app.backend.service.data_process import build_contiguous_chunks, preprocess_richest_audio
 from app.backend.service.model_load import pred, predict_batch
 from app.backend.service.model_registry import ModelEntry
+from config.loader import get_preprocess_kwargs
+
+
+_INFERENCE_SAMPLE_RATE = int(
+    get_preprocess_kwargs("backend_inference").get("sample_rate", 16000)
+)
 
 
 def _base_response(
@@ -51,10 +57,10 @@ def detect_random_crop(
     model: nn.Module,
     active_model: ModelEntry,
 ) -> dict[str, object]:
-    waveform = preprocess(file_path)
+    waveform, start_sample = preprocess_richest_audio(file_path)
     infer = pred(model, waveform)
 
-    return _base_response(
+    response = _base_response(
         filename=filename,
         detection_mode="random_6s_crop",
         active_model=active_model,
@@ -63,6 +69,15 @@ def detect_random_crop(
         pred_idx=int(infer["pred_idx"]),
         logits=[float(value) for value in infer["logits"]],
     )
+    response["crop_selection"] = {
+        "strategy": "richest_6s",
+        "start_sec": round(start_sample / _INFERENCE_SAMPLE_RATE, 4),
+        "end_sec": round(
+            (start_sample + waveform.size(1)) / _INFERENCE_SAMPLE_RATE,
+            4,
+        ),
+    }
+    return response
 
 
 def detect_full_crop(
