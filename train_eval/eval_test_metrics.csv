@@ -1,0 +1,2 @@
+model,num_samples,accuracy,balanced_accuracy,fake_precision,fake_recall,fake_f1,real_precision,real_recall,real_f1,tn,fp,fn,tp
+model_alpha_2e.safetensors,10235,0.9929653150952613,0.9929930276981853,0.9914240127642601,0.9942,0.9928100659077292,0.9944455085232714,0.9917860553963705,0.9931140015302219,4971,29,43,5192
